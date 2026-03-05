@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Scores Table</title>
+    <style>
+        /* Basic styling for the table */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        /* Footer styling */
+        tfoot {
+            font-weight: bold;
+            background-color: #f9f9f9;
+        }
+
+        /* Sorting arrow style */
+        .sortable:hover {
+            cursor: pointer;
+        }
+
+        .sorted-asc::after {
+            content: " ↑";
+        }
+
+        .sorted-desc::after {
+            content: " ↓";
+        }
+    </style>
+</head>
+<body>
+    <h2>Student Score Table</h2>
+
+    <table id="studentTable">
+        <thead>
+            <tr>
+                <th class="sortable" onclick="sortTable(0)">Student Name</th>
+                <th class="sortable" onclick="sortTable(1)">Subject</th>
+                <th class="sortable" onclick="sortTable(2)">Score</th>
+                <th class="sortable" onclick="sortTable(3)">Grade</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ayush jain</td>
+                <td>Mathematics</td>
+                <td>95</td>
+                <td>A</td>
+            </tr>
+            <tr>
+                <td>ayush jain</td>
+                <td>Science</td>
+                <td>88</td>
+                <td>B+</td>
+            </tr>
+            <tr>
+                <td>ayush jain</td>
+                <td>History</td>
+                <td>72</td>
+                <td>C</td>
+            </tr>
+            <tr>
+                <td>ayush jain</td>
+                <td>English</td>
+                <td>82</td>
+                <td>B</td>
+            </tr>
+            <tr>
+                <td>ayush jain</td>
+                <td>Geography</td>
+                <td>91</td>
+                <td>A-</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">Average Score</td>
+                <td id="averageScore">86.6</td>
+                <td>-</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <script>
+        // Sorting function
+        let sortOrder = [true, true, true, true]; // Tracks the sorting direction for each column (ascending/descending)
+
+        function sortTable(columnIndex) {
+            const table = document.getElementById("studentTable");
+            const rows = Array.from(table.rows).slice(1, -1); // Exclude header and footer rows
+            const isNumericColumn = columnIndex === 2; // Score column is numeric
+
+            rows.sort((rowA, rowB) => {
+                const cellA = rowA.cells[columnIndex].textContent;
+                const cellB = rowB.cells[columnIndex].textContent;
+
+                if (isNumericColumn) {
+                    return sortOrder[columnIndex] 
+                        ? parseFloat(cellA) - parseFloat(cellB) 
+                        : parseFloat(cellB) - parseFloat(cellA);
+                } else {
+                    return sortOrder[columnIndex]
+                        ? cellA.localeCompare(cellB)
+                        : cellB.localeCompare(cellA);
+                }
+            });
+
+            // Toggle sorting order
+            sortOrder[columnIndex] = !sortOrder[columnIndex];
+
+            // Reattach rows
+            rows.forEach(row => table.appendChild(row));
+
+            // Update sorting arrows in header
+            updateSortArrows();
+        }
+
+        function updateSortArrows() {
+            const headers = document.querySelectorAll("th");
+            headers.forEach((header, index) => {
+                header.classList.remove("sorted-asc", "sorted-desc");
+                if (sortOrder[index]) {
+                    header.classList.add("sorted-asc");
+                } else {
+                    header.classList.add("sorted-desc");
+                }
+            });
+        }
+
+        // Optionally, calculate the average score on page load
+        window.onload = function() {
+            const scores = Array.from(document.querySelectorAll("tbody tr td:nth-child(3)"));
+            const totalScore = scores.reduce((sum, score) => sum + parseFloat(score.textContent), 0);
+            const averageScore = (totalScore / scores.length).toFixed(1);
+            document.getElementById("averageScore").textContent = averageScore;
+        }
+    </script>
+</body>
+</html>
